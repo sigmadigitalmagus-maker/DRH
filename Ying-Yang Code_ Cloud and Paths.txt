@@ -1,0 +1,89 @@
+﻿import numpy as np
+import plotly.graph_objects as go
+
+# --- Parameters for Both Models ---
+num_cloud_points = 50000
+num_path_points = 1000
+max_height = 0.5
+max_radius = 1.0
+num_twists = 2
+
+# =======================================================
+#  PART 1: GENERATE THE PROBABILISTIC CLOUD
+# =======================================================
+cloud_x = np.random.normal(0, max_radius/2, num_cloud_points)
+cloud_y = np.random.normal(0, max_radius/2, num_cloud_points)
+cloud_z = np.random.normal(0, max_height/2, num_cloud_points)
+
+# Define the 3D Helical Logic for the cloud points
+cloud_angle = np.arctan2(cloud_y, cloud_x)
+cloud_helical_mask = np.sin(cloud_angle - (cloud_z/max_height) * np.pi * num_twists) > 0
+
+# Separate the cloud into Yin and Yang points
+yin_cloud_x, yin_cloud_y, yin_cloud_z = cloud_x[~cloud_helical_mask], cloud_y[~cloud_helical_mask], cloud_z[~cloud_helical_mask]
+yang_cloud_x, yang_cloud_y, yang_cloud_z = cloud_x[cloud_helical_mask], cloud_y[cloud_helical_mask], cloud_z[cloud_helical_mask]
+
+
+# =======================================================
+#  PART 2: GENERATE THE TRANSFORMATION PATHS
+# =======================================================
+path_z = np.linspace(-max_height, max_height, num_path_points)
+argument_for_sqrt = 1 - (path_z / max_height)**2
+clipped_argument = np.clip(argument_for_sqrt, 0, 1)
+path_radius = max_radius * np.sqrt(clipped_argument)
+path_angle = (path_z / max_height) * np.pi * num_twists
+
+# Path 1 (Yang Path)
+path_x1 = path_radius * np.cos(path_angle)
+path_y1 = path_radius * np.sin(path_angle)
+
+# Path 2 (Yin Path)
+path_x2 = path_radius * np.cos(path_angle + np.pi)
+path_y2 = path_radius * np.sin(path_angle + np.pi)
+
+
+# =======================================================
+#  PART 3: PLOT EVERYTHING TOGETHER
+# =======================================================
+fig = go.Figure()
+
+# Add the Yin Cloud (dark blue, semi-transparent)
+fig.add_trace(go.Scatter3d(
+   x=yin_cloud_x, y=yin_cloud_y, z=yin_cloud_z,
+   mode='markers', marker=dict(size=1.5, color='#4477aa', opacity=0.3),
+   name='Yin Cloud'
+))
+
+# Add the Yang Cloud (light yellow, semi-transparent)
+fig.add_trace(go.Scatter3d(
+   x=yang_cloud_x, y=yang_cloud_y, z=yang_cloud_z,
+   mode='markers', marker=dict(size=1.5, color='#f9d423', opacity=0.3),
+   name='Yang Cloud'
+))
+
+# Add the Yang Path (solid yellow, thick)
+fig.add_trace(go.Scatter3d(
+   x=path_x1, y=path_y1, z=path_z,
+   mode='lines', line=dict(color='#f9d423', width=5),
+   name='Yang Path'
+))
+
+# Add the Yin Path (solid blue, thick)
+fig.add_trace(go.Scatter3d(
+   x=path_x2, y=path_y2, z=path_z,
+   mode='lines', line=dict(color='#4477aa', width=5),
+   name='Yin Path'
+))
+
+# Update the layout
+fig.update_layout(
+   title_text='Unified Model: Quantum Cloud with Transformation Paths',
+   template='plotly_dark',
+   scene=dict(
+       xaxis_title='X Axis',
+       yaxis_title='Y Axis',
+       zaxis_title='Z Axis'
+   )
+)
+
+fig.show()

@@ -1,0 +1,162 @@
+﻿DRH Core Python Code
+This compilation includes the primary classes for Realm, Entity, and ConsciousnessUnit, the enumerations for moral and existential states, and the main simulation engine.
+1. Enumerations
+These enums define the fundamental states and alignments within the DRH framework.
+from enum import Enum, auto
+
+class MoralAlignment(Enum):
+   """
+   Defines the moral alignment of a consciousness unit.
+   This is a spectrum from pure self-interest to universal altruism.
+   """
+   SYNDRIONIC = "Syndrionic"       # Aligned with universal order, empathy, creation
+   ASYNDRIONIC = "Asyndrionic"   # Aligned with chaos, self-interest, entropy
+   NEUTRAL = "Neutral"           # Balanced or unaligned
+   APATHETIC = "Apathetic"       # Disconnected from the moral spectrum
+
+class ExistentialState(Enum):
+   """
+   Represents the state of existence for an entity or realm.
+   """
+   MANIFEST = auto()             # Currently existing and active
+   DORMANT = auto()              # Existing but inactive
+   POTENTIAL = auto()            # Not yet manifest, exists as a possibility
+   NULLIFIED = auto()            # Ceased to exist, returned to the Void
+
+2. Core Classes
+These are the foundational building blocks of the DRH simulation.
+import uuid
+import random
+
+class ConsciousnessUnit:
+   """
+   The fundamental unit of awareness and identity.
+   Represents a single point of consciousness, which can inhabit an Entity.
+   """
+   def __init__(self, alignment: MoralAlignment, complexity: float = 1.0):
+       self.id = uuid.uuid4()
+       self.alignment = alignment
+       self.complexity = complexity  # Represents depth of self-awareness/experience
+       self.karmic_resonance = 0.0   # A measure of the consequences of actions
+
+   def update_resonance(self, action_value: float):
+       """Updates karmic resonance based on an action."""
+       self.karmic_resonance += action_value
+       print(f"Consciousness {self.id}: Resonance updated to {self.karmic_resonance:.2f}")
+
+class Entity:
+   """
+   A vessel for a ConsciousnessUnit within a specific Realm.
+   This can be anything from a simple organism to a complex being or even a concept.
+   """
+   def __init__(self, name: str, consciousness: ConsciousnessUnit):
+       self.id = uuid.uuid4()
+       self.name = name
+       self.consciousness = consciousness
+       self.state = ExistentialState.MANIFEST
+
+   def perform_action(self):
+       """Simulates the entity performing an action based on its alignment."""
+       if self.consciousness.alignment == MoralAlignment.SYNDRIONIC:
+           action_value = random.uniform(0.1, 1.0) # Positive, creative action
+           print(f"Entity '{self.name}' performs a Syndrionic action.")
+       elif self.consciousness.alignment == MoralAlignment.ASYNDRIONIC:
+           action_value = random.uniform(-1.0, -0.1) # Negative, entropic action
+           print(f"Entity '{self.name}' performs an Asyndrionic action.")
+       else:
+           action_value = random.uniform(-0.1, 0.1) # Neutral/minor action
+           print(f"Entity '{self.name}' performs a Neutral action.")
+
+       self.consciousness.update_resonance(action_value)
+       return action_value
+
+class Realm:
+   """
+   A dimensional plane of existence with its own physical and metaphysical laws.
+   """
+   def __init__(self, name: str, vibrational_frequency: float):
+       self.id = uuid.uuid4()
+       self.name = name
+       self.vibrational_frequency = vibrational_frequency # The realm's base reality frequency
+       self.entities = []
+       self.dimensional_stability = 100.0
+
+   def add_entity(self, entity: Entity):
+       """Adds an entity to the realm."""
+       self.entities.append(entity)
+       print(f"Entity '{entity.name}' has manifested in Realm '{self.name}'.")
+
+   def update_stability(self, collective_resonance: float):
+       """Updates the realm's stability based on the actions of its inhabitants."""
+       self.dimensional_stability += collective_resonance
+       print(f"Realm '{self.name}': Stability is now {self.dimensional_stability:.2f}")
+       if self.dimensional_stability <= 0:
+           print(f"WARNING: Realm '{self.name}' has collapsed into the Void!")
+           self.entities.clear() # All entities are nullified
+
+
+3. Simulation Engine
+This simple engine demonstrates how the classes interact to simulate a cycle within a realm.
+class DRH_Simulation:
+   """
+   The main engine to run the Dimensional Reality Hypothesis simulation.
+   """
+   def __init__(self):
+       self.realms = {}
+       print("DRH Simulation Engine Initialized.")
+
+   def create_realm(self, name: str, frequency: float):
+       """Creates a new realm and adds it to the simulation."""
+       realm = Realm(name, frequency)
+       self.realms[realm.id] = realm
+       print(f"New Realm '{name}' created with frequency {frequency}.")
+       return realm
+
+   def run_cycle(self, realm_id):
+       """Runs a single simulation cycle for a specific realm."""
+       if realm_id not in self.realms:
+           print(f"Error: Realm with ID {realm_id} not found.")
+           return
+
+       realm = self.realms[realm_id]
+       print(f"\n--- Running cycle for Realm '{realm.name}' ---")
+
+       if not realm.entities:
+           print("Realm is empty. No actions to process.")
+           return
+
+       total_resonance_change = 0
+       for entity in realm.entities:
+           total_resonance_change += entity.perform_action()
+
+       # The realm's stability is affected by the sum of all actions
+       realm.update_stability(total_resonance_change)
+
+# --- Example Usage ---
+if __name__ == "__main__":
+   # 1. Initialize the simulation
+   sim = DRH_Simulation()
+
+   # 2. Create a Realm
+   physical_plane = sim.create_realm(name="Physical Plane", frequency=432.0)
+
+   # 3. Create Consciousness Units and Entities
+   consciousness_creator = ConsciousnessUnit(alignment=MoralAlignment.SYNDRIONIC, complexity=5.0)
+   entity_creator = Entity(name="The Artisan", consciousness=consciousness_creator)
+
+   consciousness_destroyer = ConsciousnessUnit(alignment=MoralAlignment.ASYNDRIONIC, complexity=5.0)
+   entity_destroyer = Entity(name="The Ravager", consciousness=consciousness_destroyer)
+   
+   consciousness_observer = ConsciousnessUnit(alignment=MoralAlignment.NEUTRAL, complexity=8.0)
+   entity_observer = Entity(name="The Watcher", consciousness=consciousness_observer)
+
+   # 4. Add entities to the realm
+   physical_plane.add_entity(entity_creator)
+   physical_plane.add_entity(entity_destroyer)
+   physical_plane.add_entity(entity_observer)
+
+   # 5. Run several simulation cycles
+   for i in range(5):
+       sim.run_cycle(physical_plane.id)
+       if physical_plane.dimensional_stability <= 0:
+           break
