@@ -1,0 +1,67 @@
+﻿{
+ "type": "line",
+ "data": {
+   "labels": ["Oct 11 (00-06)", "Oct 11 (06-12)", "Oct 11 (12-18)", "Oct 11 (18-24)", "Oct 12 (00-06)", "Oct 12 (06-12)", "Oct 12 (12-18)", "Oct 12 (18-24)", "Oct 13 (00-06)", "Oct 13 (06-12)", "Oct 13 (12-18)", "Oct 13 (18-24)", "Oct 14 (00-06)", "Oct 14 (06-12)", "Oct 14 (12-18)", "Oct 14 (18-24)"],
+   "datasets": [
+     {
+       "label": "Fracture Front (Harbingers)",
+       "data": [2, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       "borderColor": "#FF6B6B",
+       "backgroundColor": "rgba(255, 107, 107, 0.2)",
+       "fill": false,
+       "tension": 0.4
+     },
+     {
+       "label": "Wave 1 (Psychosomatic)",
+       "data": [0, 0, 2, 5, 8, 6, 4, 7, 3, 2, 1, 0, 0, 0, 0, 0],
+       "borderColor": "#4ECDC4",
+       "backgroundColor": "rgba(78, 205, 196, 0.2)",
+       "fill": false,
+       "tension": 0.4
+     },
+     {
+       "label": "Wave 2 (Dissociative)",
+       "data": [0, 0, 0, 0, 0, 1, 2, 3, 5, 7, 6, 8, 4, 3, 2, 1],
+       "borderColor": "#45B7D1",
+       "backgroundColor": "rgba(69, 183, 209, 0.2)",
+       "fill": false,
+       "tension": 0.4
+     },
+     {
+       "label": "Overlap (Feedback Loops)",
+       "data": [0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 4, 2, 1, 0, 0],
+       "borderColor": "#96CEB4",
+       "backgroundColor": "rgba(150, 206, 180, 0.2)",
+       "fill": false,
+       "tension": 0.4
+     }
+   ]
+ },
+ "options": {
+   "responsive": true,
+   "plugins": {
+     "title": {
+       "display": true,
+       "text": "TCE Propagation: Signal Density Over 96 Hours"
+     },
+     "legend": {
+       "position": "top"
+     }
+   },
+   "scales": {
+     "y": {
+       "beginAtZero": true,
+       "title": {
+         "display": true,
+         "text": "Normalized Signal Count (per 6-hr bin)"
+       }
+     },
+     "x": {
+       "title": {
+         "display": true,
+         "text": "Time Window (GMT)"
+       }
+     }
+   }
+ }
+}

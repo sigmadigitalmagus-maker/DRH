@@ -1,0 +1,284 @@
+﻿# --- TCE RESEARCH TOOLKIT: ILLUSTRATIVE & CONSOLIDATED CODE ---
+#
+# This script consolidates the open-source analytical framework developed during
+# the Temporal Convergence Event (TCE) research of October 2025.
+#
+# Core Modules:
+# 1. HVI Profiling: Identifies High-Variance Individuals.
+# 2. Motif Clustering: Interprets the semantic content of their reports.
+# 3. Biofeedback Correlation: Provides a theoretical blueprint for physiological validation.
+# 4. Artificial TCE Monitoring: A proposed module to detect artificial timeline shear.
+# 5. Pet Rock Sentinel Logging: A sample logging function for low-variance sentinels.
+#
+# Dependencies: pandas, numpy, scikit-learn, sentence-transformers, hdbscan, requests
+# To install: pip install pandas numpy scikit-learn sentence-transformers hdbscan requests
+
+import pandas as pd
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+from sentence_transformers import SentenceTransformer
+import hdbscan
+import requests
+from datetime import datetime, timedelta
+
+# =============================================================================
+# 1. HVI PROFILING MODULE: "Variance Score" Algorithm
+# =============================================================================
+
+class HVIProfiler:
+   """
+   A class to assign a "Variance Score" to social media users based on
+   their profile data, identifying High-Variance Individuals (HVIs).
+   """
+   
+   def __init__(self):
+       # Define keyword lexicons with weights
+       self.base_terms = {
+           'artist': 1, 'founder': 1, 'nomad': 1, 'traveler': 1,
+           'explorer': 1, 'philosopher': 1, 'writer': 1, 'musician': 1,
+           'researcher': 1
+       }
+       
+       self.hvi_terms = {
+           'neurodivergent': 2, 'lucid dreamer': 2, 'psychedelic': 2,
+           'consciousness': 2, 'reality fluid': 2, 'simulation': 2,
+           'quantum': 2, 'liminal': 2
+       }
+       
+       self.variance_hotspots = [
+           'san francisco', 'sf', 'new york', 'nyc', 'berlin', 
+           'london', 'tokyo', 'austin', 'portland'
+       ]
+   
+   def calculate_variance_score(self, user_data):
+       """
+       Calculate Variance Score for a user dictionary.
+       user_data should contain: 'description', 'location'
+       """
+       score = 0
+       description = user_data.get('description', '').lower()
+       location = user_data.get('location', '').lower()
+       
+       # Check base terms
+       for term, weight in self.base_terms.items():
+           if term in description:
+               score += weight
+       
+       # Check HVI terms
+       for term, weight in self.hvi_terms.items():
+           if term in description:
+               score += weight
+       
+       # Apply geographic multiplier
+       if any(hotspot in location for hotspot in self.variance_hotspots):
+           score *= 1.5
+       
+       return score
+
+# =============================================================================
+# 2. MOTIF CLUSTERING ENGINE: Thematic Analysis
+# =============================================================================
+
+class MotifClusterer:
+   """
+   A class to cluster text data and identify TCE-related motifs using
+   semantic embeddings and unsupervised clustering.
+   """
+   
+   def __init__(self):
+       # Load sentence transformer model. It will download on first run.
+       self.model = SentenceTransformer('all-MiniLM-L6-v2')
+       
+       # Define reference vectors for known TCE motifs
+       self.reference_texts = {
+           'VEIL_TEAR': [
+               "a tear in reality", "rip in fabric of space", "glitch in matrix",
+               "shimmer in air", "reality breaking", "dimensional rift"
+           ],
+           'MIRROR_WORLD': [
+               "parallel world", "doppelganger", "familiar but wrong",
+               "reflection changed", "deja vu", "alternate reality"
+           ],
+           'DATA_STREAM': [
+               "dreaming in code", "information overload", "seeing numbers",
+               "universe as simulation", "downloading information", "binary dreams"
+           ]
+       }
+       
+       # Pre-compute reference embeddings
+       self.reference_embeddings = {}
+       for motif, texts in self.reference_texts.items():
+           self.reference_embeddings[motif] = self.model.encode(texts)
+   
+   def cluster_texts(self, texts, min_cluster_size=2):
+       """
+       Cluster a list of texts and identify TCE motifs.
+       Returns DataFrame with cluster assignments and motif tags.
+       """
+       text_embeddings = self.model.encode(texts)
+       
+       clusterer = hdbscan.HDBSCAN(
+           min_cluster_size=min_cluster_size,
+           metric='euclidean',
+           cluster_selection_method='eom'
+       )
+       cluster_labels = clusterer.fit_predict(text_embeddings)
+       
+       results = pd.DataFrame({'text': texts, 'cluster_id': cluster_labels})
+       
+       results['motif'] = results['cluster_id'].apply(
+           lambda x: self._identify_cluster_motif(text_embeddings, cluster_labels, x)
+       )
+       return results
+   
+   def _identify_cluster_motif(self, embeddings, labels, cluster_id):
+       if cluster_id == -1: return 'NOISE'
+       
+       cluster_mask = (labels == cluster_id)
+       cluster_embeddings = embeddings[cluster_mask]
+       
+       if len(cluster_embeddings) == 0: return 'UNKNOWN'
+       
+       centroid = cluster_embeddings.mean(axis=0).reshape(1, -1)
+       
+       best_similarity = 0
+       best_motif = 'UNKNOWN'
+       
+       for motif, ref_embeddings in self.reference_embeddings.items():
+           similarities = cosine_similarity(centroid, ref_embeddings)
+           max_similarity = similarities.max()
+           
+           if max_similarity > best_similarity and max_similarity > 0.65:
+               best_similarity = max_similarity
+               best_motif = motif
+               
+       return best_motif
+
+# =============================================================================
+# 3. BIOFEEDBACK CORRELATION MODULE: Theoretical Blueprint
+# =============================================================================
+
+def theoretical_biofeedback_correlation():
+   """
+   Theoretical function demonstrating how social signals could be
+   correlated with physiological data for TCE validation.
+   This is a BLUEPRINT - requires actual API integration for implementation.
+   """
+   print("\n--- Biofeedback Correlation Blueprint ---")
+   print("1. Input: Social data (timestamp, variance_score, motif)")
+   print("2. Input: Biofeedback data (timestamp, HRV, RHR) from health APIs")
+   print("3. Process: Temporal alignment and aggregation of signals")
+   print("4. Analysis: Cross-correlation between social signal strength and HRV")
+   print("5. Output: TCE validation status (e.g., CONFIRMED | NEGATIVE)")
+   print("NOTE: Full implementation requires secure and consensual health API integration.")
+
+# =============================================================================
+# 4. ARTIFICIAL TCE RISK MONITOR: Proposed Enhancement
+# =============================================================================
+
+class ArtificialTCEMonitor:
+   """
+   Monitor for potential artificial TCEs via high-energy experiment schedules
+   and geomagnetic activity.
+   """
+   def __init__(self):
+       self.noaa_api = "https://services.swpc.noaa.gov/json/planetary_k_index_1m.json"
+       self.cern_schedule_url = "https://example-cern-schedule-api"  # Placeholder
+       self.alert_thresholds = {"k_index": 4, "signal_spike": 2.0}
+
+   def fetch_geomagnetic_data(self):
+       try:
+           response = requests.get(self.noaa_api)
+           if response.status_code == 200:
+               # Get the most recent K-index value
+               latest_k_index = float(response.json()[-1]["kp"])
+               return latest_k_index
+       except Exception as e:
+           print(f"Could not fetch K-index data: {e}")
+       return 0
+
+   def check_experiment_schedule(self):
+       # In a real scenario, this would involve web scraping or an official API call
+       return {"cern_active": False, "timestamp": datetime.now()} # Mock response
+
+   def monitor_risk(self, social_signal_density):
+       k_index = self.fetch_geomagnetic_data()
+       experiment_status = self.check_experiment_schedule()
+
+       if k_index > self.alert_thresholds["k_index"] and experiment_status["cern_active"]:
+           return "EVENT"
+       elif k_index > self.alert_thresholds["k_index"] or social_signal_density > self.alert_thresholds["signal_spike"]:
+           return "WARNING"
+       return "WATCH"
+
+# =============================================================================
+# 5. PET ROCK SENTINEL LOGGING: Sample Function
+# =============================================================================
+
+def demo_pet_rock_logging():
+   """Demonstrates a simple logging protocol for a low-variance sentinel."""
+   print("\n--- Pet Rock Sentinel Log Demo ---")
+   rock_log = pd.DataFrame({
+       "timestamp": [datetime.now(), datetime.now() - timedelta(minutes=30)],
+       "stimulus": ["Sea Shanty: Drunken Sailor", "Silence"],
+       "observed_response": ["No vibration", "Faint warmth (unconfirmed)"],
+       "tce_signal_count": [3, 0] # Mock correlated HVI signals
+   })
+   rock_log["tce_correlation"] = rock_log["tce_signal_count"].apply(
+       lambda x: "Potential" if x > 0 else "None"
+   )
+   print("Generated Log:")
+   print(rock_log)
+   # rock_log.to_csv("pet_rock_tce_log.csv", index=False) # Uncomment to save
+
+# =============================================================================
+# MAIN DEMONSTRATION SCRIPT
+# =============================================================================
+
+if __name__ == "__main__":
+   print("TCE RESEARCH TOOLKIT DEMONSTRATION")
+   print("=" * 50)
+   
+   # --- Demo HVI Profiling ---
+   print("\n--- HVI Profiling Demo ---")
+   profiler = HVIProfiler()
+   test_users = [
+       {'description': 'Marketing manager from Ohio', 'location': 'Ohio'},
+       {'description': 'Traveler and writer exploring consciousness', 'location': 'Berlin'},
+       {'description': 'Neurodivergent artist and reality hacker', 'location': 'SF'}
+   ]
+   for user in test_users:
+       score = profiler.calculate_variance_score(user)
+       print(f"User: {user['description'][:30]}... | Score: {score}")
+
+   # --- Demo Motif Clustering ---
+   print("\n--- Motif Clustering Demo ---")
+   clusterer = MotifClusterer()
+   test_texts = [
+       "My house felt wrong today, like the walls were breathing",
+       "Dreamt in binary last night, woke up with equations in my head",
+       "Saw my double in the mirror but it smiled when I didn't",
+       "Just had coffee and going to work",
+       "Reality glitched for a second, saw colors that don't exist",
+       "Traffic is terrible this morning"
+   ]
+   results = clusterer.cluster_texts(test_texts)
+   for _, row in results.iterrows():
+       print(f"Text: {row['text'][:40]}... | Cluster: {row['cluster_id']:>2} | Motif: {row['motif']}")
+   
+   # --- Show Biofeedback Correlation blueprint ---
+   theoretical_biofeedback_correlation()
+
+   # --- Demo Artificial TCE Risk Monitor ---
+   print("\n--- Artificial TCE Risk Demo ---")
+   monitor = ArtificialTCEMonitor()
+   # Mock social signal density (e.g., 1.5x above baseline)
+   mock_signal_density = 1.5 
+   alert_level = monitor.monitor_risk(mock_signal_density)
+   print(f"Current Risk Alert Level: {alert_level}")
+
+   # --- Demo Pet Rock Logging ---
+   demo_pet_rock_logging()
+   
+   print("\n" + "=" * 50)
+   print("Toolkit demonstration complete.")
